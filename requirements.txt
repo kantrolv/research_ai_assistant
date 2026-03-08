@@ -1,0 +1,17 @@
+streamlit
+scikit-learn==1.6.1
+pandas
+numpy
+spacy
+sumy
+wordcloud
+matplotlib
+networkx
+sentence-transformers
+umap-learn==0.5.5
+PyPDF2
+langgraph
+langchain
+langchain-community
+duckduckgo-search
+ddgs
