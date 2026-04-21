@@ -201,9 +201,14 @@ def rephrase_node(state: ResearchState) -> dict:
         corrected = correction_chain.invoke({"question": question})
         corrected_text = corrected.content.strip()
 
-        # Only use correction if it looks valid (not empty, not too different)
+        # Only use correction if it looks valid
         if corrected_text and len(corrected_text) < len(question) * 3:
-            question = corrected_text
+            # Safety: check that correction shares words with original
+            original_words = set(question.lower().split())
+            corrected_words = set(corrected_text.lower().split())
+            if original_words & corrected_words:
+                question = corrected_text
+            # else: correction went off-track, keep original
 
         return {
             "rephrased_question": question,
@@ -241,6 +246,12 @@ def search_node(state: ResearchState) -> dict:
         if not results:
             simplified = " ".join(query.split()[:4])
             results = search_and_scrape(f"what is {simplified}")
+
+        # Retry 3: Try the original question (before rephrase/correction)
+        if not results:
+            original = state.get("question", "")
+            if original and original != query:
+                results = search_and_scrape(original)
 
         if not results:
             return {
@@ -358,7 +369,7 @@ def generate_node(state: ResearchState) -> dict:
         for i, doc in enumerate(retrieved):
             source_title = doc.metadata.get("title", "Unknown Source")
             source_url = doc.metadata.get("url", "")
-            trimmed_content = doc.page_content[:200]
+            trimmed_content = doc.page_content[:500]
             context_parts.append(
                 f"[Source {i+1}: {source_title}]({source_url})\n{trimmed_content}\n"
             )

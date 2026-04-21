@@ -108,4 +108,26 @@ def _clean_markdown(text: str) -> str:
     text = re.sub(r'\*\*([^*]+)\*\*', r'\1', text)
     # Remove italic markers
     text = re.sub(r'\*([^*]+)\*', r'\1', text)
-    return text
+    return _to_pdf_text(text)
+
+
+def _to_pdf_text(text: str) -> str:
+    """
+    Normalize text to a PDF-safe representation for built-in Helvetica.
+    Replaces common Unicode punctuation and strips unsupported glyphs.
+    """
+    replacements = {
+        "\u2013": "-",   # en dash
+        "\u2014": "-",   # em dash
+        "\u2018": "'",   # left single quote
+        "\u2019": "'",   # right single quote
+        "\u201c": '"',   # left double quote
+        "\u201d": '"',   # right double quote
+        "\u2026": "...", # ellipsis
+        "\u00a0": " ",   # non-breaking space
+    }
+    for src, dst in replacements.items():
+        text = text.replace(src, dst)
+
+    # Helvetica supports Latin-1 only; keep export stable for all inputs.
+    return text.encode("latin-1", errors="replace").decode("latin-1")
