@@ -340,13 +340,13 @@ st.markdown("""
 # Use pending_query to auto-populate from follow-up/expansion clicks
 default_query = st.session_state.pending_query
 if default_query:
+    st.session_state.research_input = default_query
     st.session_state.pending_query = ""  # Clear after use
 
 col_input, col_btn = st.columns([5, 1])
 with col_input:
     user_question = st.text_input(
         "Research Question",
-        value=default_query,
         placeholder="e.g., What are recent breakthroughs in quantum computing?",
         label_visibility="collapsed",
         key="research_input",

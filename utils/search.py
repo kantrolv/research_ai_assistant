@@ -93,18 +93,23 @@ def search_and_scrape(query: str) -> list[dict]:
 
     Returns:
         List of dicts with keys: title, url, snippet, content
-        Only includes results where scraping was successful.
+        Falls back to the search snippet when scraping fails or returns too little text.
     """
     results = web_search(query)
     enriched = []
 
     for r in results:
         content = scrape_page(r["url"])
-        if content and len(content.strip()) > 50:
+        if not content or len(content.strip()) < 50:
+            snippet = r.get("snippet", "").strip()
+            if len(snippet) >= 20:
+                content = f"{r.get('title', '').strip()}. {snippet}".strip()
+
+        if content and len(content.strip()) > 20:
             enriched.append({
-                "title": r["title"],
-                "url": r["url"],
-                "snippet": r["snippet"],
+                "title": r.get("title", ""),
+                "url": r.get("url", ""),
+                "snippet": r.get("snippet", ""),
                 "content": content,
             })
 
