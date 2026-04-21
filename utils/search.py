@@ -11,6 +11,7 @@ Functions:
 """
 
 from duckduckgo_search import DDGS
+import time
 import requests
 from bs4 import BeautifulSoup
 from config import MAX_SEARCH_RESULTS, MAX_CONTENT_LENGTH
@@ -27,20 +28,27 @@ def web_search(query: str, max_results: int = MAX_SEARCH_RESULTS) -> list[dict]:
     Returns:
         List of dicts with keys: title, url, snippet
     """
-    try:
-        with DDGS() as ddgs:
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            ddgs = DDGS()
             results = list(ddgs.text(query, max_results=max_results))
-        return [
-            {
-                "title": r.get("title", ""),
-                "url": r.get("href", ""),
-                "snippet": r.get("body", ""),
-            }
-            for r in results
-        ]
-    except Exception as e:
-        print(f"[Search Error] {e}")
-        return []
+            if results:
+                return [
+                    {
+                        "title": r.get("title", ""),
+                        "url": r.get("href", ""),
+                        "snippet": r.get("body", ""),
+                    }
+                    for r in results
+                ]
+            if attempt < max_retries - 1:
+                time.sleep((attempt + 1) * 2)
+        except Exception as e:
+            print(f"[Search Error] Attempt {attempt + 1}: {e}")
+            if attempt < max_retries - 1:
+                time.sleep((attempt + 1) * 3)
+    return []
 
 
 def scrape_page(url: str, max_length: int = MAX_CONTENT_LENGTH) -> str:
@@ -101,11 +109,9 @@ def search_and_scrape(query: str) -> list[dict]:
     for r in results:
         content = scrape_page(r["url"])
         if not content or len(content.strip()) < 50:
-            snippet = r.get("snippet", "").strip()
-            if len(snippet) >= 20:
-                content = f"{r.get('title', '').strip()}. {snippet}".strip()
+            content = f"{r.get('title', '')}. {r.get('snippet', '')}".strip()
 
-        if content and len(content.strip()) > 20:
+        if content and len(content.strip()) > 10:
             enriched.append({
                 "title": r.get("title", ""),
                 "url": r.get("url", ""),

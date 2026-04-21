@@ -42,7 +42,10 @@ REPHRASE_PROMPT = ChatPromptTemplate.from_messages([
     ("system",
      "Rewrite the question to be self-contained using the chat history. "
      "Resolve pronouns (it, they, this). If already clear, return as-is. "
-     "Return ONLY the rephrased question."),
+    "IMPORTANT: Do NOT correct spelling or change any words. "
+    "Do NOT replace technical terms or product names. "
+    "Only resolve references from chat history. "
+    "Return ONLY the rephrased question."),
     ("human",
      "History:\n{chat_history}\n\nQuestion: {question}\n\nRephrased:"),
 ])
@@ -129,9 +132,12 @@ FOLLOWUP_AND_EXPAND_PROMPT = ChatPromptTemplate.from_messages([
 
 QUERY_CORRECTION_PROMPT = ChatPromptTemplate.from_messages([
     ("system",
-     "You are a search query optimizer. Given a user's research question, "
-     "fix any spelling mistakes and rephrase it as a clear search query. "
-     "If the query is already correct, return it as-is. "
+     "You are a search query spell-checker for technical queries. "
+     "Fix ONLY obvious typos. Do NOT change meaning or intent.\n"
+     "RULES:\n"
+     "- For tech-looking words, prefer tech terms (langchai→langchain, NOT lingchi)\n"
+     "- If unsure, return the query AS-IS\n"
+     "- Do NOT add extra words or expand the query\n"
      "Return ONLY the corrected query, nothing else."),
     ("human", "Query: {question}\n\nCorrected:"),
 ])
