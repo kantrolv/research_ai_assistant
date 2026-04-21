@@ -56,7 +56,7 @@ def get_api_keys() -> list[str]:
 
 st.set_page_config(
     page_title="AI Research Assistant",
-    page_icon="🔬",
+    page_icon="A",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -246,7 +246,7 @@ if "pending_query" not in st.session_state:
 # ══════════════════════════════════════════════════════════
 
 with st.sidebar:
-    st.markdown("### ⚙️ Configuration")
+    st.markdown("### Configuration")
 
     # Auto-load keys from .env
     api_keys = get_api_keys()
@@ -254,11 +254,11 @@ with st.sidebar:
     if api_keys:
         num = len(api_keys)
         if num == 1:
-            st.warning(f"⚡ {num} API key loaded — may hit rate limits")
+            st.warning(f"{num} API key loaded - may hit rate limits")
         elif num == 2:
-            st.info(f"⚡ {num} API keys loaded — good speed!")
+            st.info(f"{num} API keys loaded - good speed!")
         else:
-            st.success(f"⚡ {num} API keys loaded — maximum speed!")
+            st.success(f"{num} API keys loaded - maximum speed!")
 
         # Show key rotation plan
         key_labels = ["Key A", "Key B", "Key C"]
@@ -268,11 +268,11 @@ with st.sidebar:
             for i in range(len(steps))
         )
         st.markdown(
-            f"<div class='key-plan'>🔄 Rotation: {rotation_plan}</div>",
+            f"<div class='key-plan'>Rotation plan: {rotation_plan}</div>",
             unsafe_allow_html=True,
         )
     else:
-        st.error("❌ No API keys found!")
+        st.error("No API keys found!")
         st.code(
             "GROQ_API_KEY_1=gsk_your_key_here\n"
             "GROQ_API_KEY_2=gsk_your_key_here\n"
@@ -280,12 +280,12 @@ with st.sidebar:
             language="bash",
         )
         st.caption("Create a `.env` file in the project root with the keys above")
-        st.markdown("[🔗 Get free Groq API key](https://console.groq.com/keys)")
+        st.markdown("[Get free Groq API key](https://console.groq.com/keys)")
 
     st.divider()
 
     # ── Session History (Conversational RAG memory) ──
-    st.markdown("### 💬 Session History")
+    st.markdown("### Session History")
 
     if st.session_state.chat_history:
         for i, h in enumerate(st.session_state.chat_history):
@@ -295,7 +295,7 @@ with st.sidebar:
                 answer_preview = h["answer"][:300] if h["answer"] else "No answer"
                 st.markdown(f"**Answer:** {answer_preview}...")
 
-        if st.button("🗑️ Clear History", use_container_width=True):
+        if st.button("Clear History", use_container_width=True):
             st.session_state.chat_history = []
             st.session_state.current_report = None
             st.session_state.pending_query = ""
@@ -306,15 +306,15 @@ with st.sidebar:
     st.divider()
 
     # ── How It Works ──
-    st.markdown("### 📋 How It Works")
+    st.markdown("### How It Works")
     st.caption(
-        "1️⃣ You ask a research question\n\n"
-        "2️⃣ Agent rephrases it using chat context\n\n"
-        "3️⃣ Searches the web via DuckDuckGo\n\n"
-        "4️⃣ Chunks & embeds content (RAG)\n\n"
-        "5️⃣ LLM generates a structured report\n\n"
-        "6️⃣ Report is validated against sources\n\n"
-        "7️⃣ Follow-up questions are suggested"
+        "1. You ask a research question\n\n"
+        "2. The agent rephrases it using chat context\n\n"
+        "3. It searches the web via DuckDuckGo\n\n"
+        "4. It chunks and embeds content for RAG\n\n"
+        "5. The LLM generates a structured report\n\n"
+        "6. The report is validated against sources\n\n"
+        "7. Follow-up questions are suggested"
     )
 
     st.divider()
@@ -327,7 +327,7 @@ with st.sidebar:
 
 st.markdown("""
 <div class="main-header">
-    <h1>🔬 Agentic AI Research Assistant</h1>
+    <h1>Agentic AI Research Assistant</h1>
     <p>Ask any research question — the agent will search, analyze, and generate a structured report</p>
 </div>
 """, unsafe_allow_html=True)
@@ -352,7 +352,7 @@ with col_input:
         key="research_input",
     )
 with col_btn:
-    run_clicked = st.button("🚀 Research", use_container_width=True, type="primary")
+    run_clicked = st.button("Research", use_container_width=True, type="primary")
 
 
 # ══════════════════════════════════════════════════════════
@@ -360,12 +360,12 @@ with col_btn:
 # ══════════════════════════════════════════════════════════
 
 STEPS = [
-    ("rephrase",  "🔄", "Rephrase"),
-    ("search",    "🔍", "Search"),
-    ("retrieve",  "📦", "Retrieve"),
-    ("generate",  "✍️", "Generate"),
-    ("validate",  "✅", "Validate"),
-    ("finalize",  "📄", "Report"),
+    ("rephrase",  "1", "Rephrase"),
+    ("search",    "2", "Search"),
+    ("retrieve",  "3", "Retrieve"),
+    ("generate",  "4", "Generate"),
+    ("validate",  "5", "Validate"),
+    ("finalize",  "6", "Report"),
 ]
 
 
@@ -377,14 +377,14 @@ def render_progress(current_step: str, completed_steps: set):
             if name in completed_steps:
                 st.markdown(
                     f"<div class='step-item step-done'>"
-                    f"<span class='step-icon'>✅</span>"
+                    f"<span class='step-icon'>Done</span>"
                     f"<div class='step-label'>{label}</div></div>",
                     unsafe_allow_html=True,
                 )
             elif name == current_step:
                 st.markdown(
                     f"<div class='step-item step-active'>"
-                    f"<span class='step-icon'>⏳</span>"
+                    f"<span class='step-icon'>Now</span>"
                     f"<div class='step-label'>{label}</div></div>",
                     unsafe_allow_html=True,
                 )
@@ -411,12 +411,12 @@ if run_clicked and user_question and api_keys:
 
     # Status labels for each step
     step_labels = {
-        "rephrase":  "🔄 Rephrasing question with conversation context...",
-        "search":    "🔍 Searching the web with DuckDuckGo...",
-        "retrieve":  "📦 Chunking, embedding, and retrieving (RAG)...",
-        "generate":  "✍️ Generating structured research report...",
-        "validate":  "✅ Validating claims against source material...",
-        "finalize":  "📄 Preparing final report & follow-up questions...",
+        "rephrase":  "Rephrasing question with conversation context...",
+        "search":    "Searching the web with DuckDuckGo...",
+        "retrieve":  "Chunking, embedding, and retrieving for RAG...",
+        "generate":  "Generating a structured research report...",
+        "validate":  "Validating claims against source material...",
+        "finalize":  "Preparing the final report and follow-up questions...",
     }
 
     def progress_callback(node_name: str, status: str):
@@ -431,7 +431,7 @@ if run_clicked and user_question and api_keys:
     # Show initial progress
     with progress_placeholder.container():
         render_progress("rephrase", set())
-    status_text.info("🧠 Starting research pipeline...")
+    status_text.info("Starting research pipeline...")
 
     try:
         # Run the LangGraph agent with real-time progress + key rotation
@@ -460,17 +460,17 @@ if run_clicked and user_question and api_keys:
         completed_steps = {"rephrase", "search", "retrieve", "generate", "validate", "finalize"}
         with progress_placeholder.container():
             render_progress("finalize", completed_steps)
-        status_text.success("✅ Research complete!")
+        status_text.success("Research complete!")
 
     except Exception as e:
-        status_text.error(f"❌ Error: {str(e)}")
+        status_text.error(f"Error: {str(e)}")
         st.stop()
 
 elif run_clicked and not api_keys:
-    st.error("⚠️ No API keys found! Add your Groq keys to `.env` file.")
+    st.error("No API keys found. Add your Groq keys to the .env file.")
 
 elif run_clicked and not user_question:
-    st.warning("⚠️ Please enter a research question.")
+    st.warning("Please enter a research question.")
 
 
 # ══════════════════════════════════════════════════════════
@@ -486,18 +486,18 @@ if result:
     # ── Case 1: Error with no report (search failed / early exit) ──
     if error and not report:
         st.markdown("---")
-        st.error(f"🔍 {error}")
-        st.info("💡 **Tips:** Check spelling, use more specific terms, or try a different question.")
+        st.error(error)
+        st.info("Tips: Check spelling, use more specific terms, or try a different question.")
 
     # ── Case 2: Successful report ──
     elif report:
         # Show any warnings from the pipeline
         if error:
-            st.warning(f"⚠️ {error}")
+            st.warning(error)
 
         # ── Research Report ──
         st.markdown("---")
-        st.markdown("### 📄 Research Report")
+        st.markdown("### Research Report")
         st.markdown(
             f'<div class="report-card">{""}</div>',
             unsafe_allow_html=True,
@@ -514,7 +514,7 @@ if result:
                     pdf_path = export_pdf(report)
                     with open(pdf_path, "rb") as f:
                         st.download_button(
-                            "📥 Download PDF",
+                            "Download PDF",
                             data=f.read(),
                             file_name="research_report.pdf",
                             mime="application/pdf",
@@ -528,7 +528,7 @@ if result:
                     md_path = export_markdown(report)
                     with open(md_path, "r") as f:
                         st.download_button(
-                            "📥 Download Markdown",
+                            "Download Markdown",
                             data=f.read(),
                             file_name="research_report.md",
                             mime="text/markdown",
@@ -541,13 +541,13 @@ if result:
         sources = result.get("sources", [])
         if sources:
             st.markdown("---")
-            st.markdown("### 🔗 Sources")
+            st.markdown("### Sources")
             for src in sources:
                 title = src.get("title", "Untitled")
                 url = src.get("url", "#")
                 st.markdown(
                     f"<div class='source-item'>"
-                    f"<a href='{url}' target='_blank'>📎 {title}</a>"
+                    f"<a href='{url}' target='_blank'>{title}</a>"
                     f"</div>",
                     unsafe_allow_html=True,
                 )
@@ -556,10 +556,10 @@ if result:
         follow_ups = result.get("follow_up_questions", [])
         if follow_ups:
             st.markdown("---")
-            st.markdown("### 💡 Follow-up Questions")
+            st.markdown("### Follow-up Questions")
             st.caption("Click any question to research it next:")
             for i, q in enumerate(follow_ups):
-                if st.button(f"🔎 {q}", key=f"followup_{i}", use_container_width=True):
+                if st.button(q, key=f"followup_{i}", use_container_width=True):
                     st.session_state.pending_query = q
                     st.rerun()
 
@@ -567,10 +567,10 @@ if result:
         expanded = result.get("expanded_queries", [])
         if expanded:
             st.markdown("---")
-            st.markdown("### 🌐 Explore Related Topics")
+            st.markdown("### Explore Related Topics")
             st.caption("Broaden your research into related areas:")
             for i, q in enumerate(expanded):
-                if st.button(f"🔭 {q}", key=f"expand_{i}", use_container_width=True):
+                if st.button(q, key=f"expand_{i}", use_container_width=True):
                     st.session_state.pending_query = q
                     st.rerun()
 
@@ -578,14 +578,14 @@ if result:
         validation = result.get("validation", "")
         if validation:
             st.markdown("---")
-            with st.expander("🔍 Validation Details", expanded=False):
+            with st.expander("Validation Details", expanded=False):
                 if "VALID" in validation and "NEEDS" not in validation:
                     st.markdown(
-                        f"<div class='validation-valid'>✅ {validation}</div>",
+                        f"<div class='validation-valid'>Valid: {validation}</div>",
                         unsafe_allow_html=True,
                     )
                 else:
                     st.markdown(
-                        f"<div class='validation-issues'>⚠️ {validation}</div>",
+                        f"<div class='validation-issues'>Needs attention: {validation}</div>",
                         unsafe_allow_html=True,
                     )
