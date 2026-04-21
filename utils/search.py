@@ -230,4 +230,18 @@ def search_and_scrape(query: str) -> list[dict]:
                 "content": content,
             })
 
+    # SAFETY NET: if all scraping failed but we had search results,
+    # force-include using title + snippet
+    if not enriched and results:
+        for r in results:
+            title = r.get("title", "").strip()
+            snippet = r.get("snippet", "").strip()
+            if title or snippet:
+                enriched.append({
+                    "title": title,
+                    "url": r.get("url", ""),
+                    "snippet": snippet,
+                    "content": f"{title}. {snippet}".strip() if snippet else title,
+                })
+
     return enriched
