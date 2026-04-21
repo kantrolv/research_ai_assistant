@@ -17,9 +17,22 @@ Features:
 """
 
 import os
+import sys
+from pathlib import Path
 import streamlit as st
 from dotenv import load_dotenv
-from agents.research_agent import run_research_agent
+
+# Ensure local packages resolve first on hosted environments.
+APP_ROOT = Path(__file__).resolve().parent
+if str(APP_ROOT) not in sys.path:
+    sys.path.insert(0, str(APP_ROOT))
+
+try:
+    from agents.research_agent import run_research_agent
+except Exception:
+    import importlib
+    run_research_agent = importlib.import_module("agents.research_agent").run_research_agent
+
 from utils.export import export_pdf, export_markdown
 from config import MAX_CHAT_HISTORY
 
